@@ -11,8 +11,6 @@
 
 *本文翻译自[What the f*ck Python!](https://github.com/satwikkansal/wtfpython)*
 
-*本文遵循[WTFPL2.0](http://www.wtfpl.net/)（想干啥就干啥）协议*
-
 *本文全文为意译,若有错误,请联系作者*
 
 
