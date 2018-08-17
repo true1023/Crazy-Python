@@ -1,7 +1,7 @@
 
 <p align="center"><img src="/assets/logo.png" alt=""></p>
 <h1 align="center">疯狂的Python! 🐍</h1>
-<p align="center">一些有趣的鲜为人知的Python特性及合.</p>
+<p align="center">一些有趣的鲜为人知的Python特性集合.</p>
 
 <a href="http://www.wtfpl.net/"><img
        src="http://www.wtfpl.net/wp-content/uploads/2012/12/wtfpl-badge-4.png"
