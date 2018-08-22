@@ -29,7 +29,7 @@ Python作为一个设计优美的交互式脚本语言，提供了许多人性�
 好了，那么我们开始吧！
 
 
-[Section: Strain your brainn!](#section-strain-yourbrain)
+[Section: Strain your brainn!](#这是一个测试)
 
 
 # Structure of the Examples
@@ -94,6 +94,5 @@ Now, just run `wtfpython` at the command line which will open this collection in
 
 # 👀 Examples
 
-<a name="section-strain-yourbrain"/>
 
-## Section: Strain your brainsdfsdfsdf!
+## 这是一个测试
