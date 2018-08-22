@@ -29,7 +29,7 @@ Python作为一个设计优美的交互式脚本语言，提供了许多人性�
 好了，那么我们开始吧！
 
 
-[Section: Strain your brainn!](#section-strain-your-brain)
+[Section: Strain your brainn!](#section-strain-yourbrain)
 
 
 # Structure of the Examples
