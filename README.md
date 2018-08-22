@@ -95,4 +95,5 @@ Now, just run `wtfpython` at the command line which will open this collection in
 # 👀 Examples
 
 <a name="section-strain-yourbrain"/>
+
 ## Section: Strain your brainsdfsdfsdf!
