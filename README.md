@@ -92,7 +92,7 @@ Now, just run `wtfpython` at the command line which will open this collection in
 
 ---
 
-# 👀 Examples
+# :eyes: Examples
 
 
 ## 这是一个测试
