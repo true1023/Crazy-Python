@@ -67,6 +67,8 @@ Python作为一个设计优美的交互式脚本语言，提供了许多人性�
 
 # 示例结构说明
 
+[![Join the chat at https://gitter.im/Crazy-Python/Lobby](https://badges.gitter.im/Crazy-Python/Lobby.svg)](https://gitter.im/Crazy-Python/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 下面是例子里所使用的结构说明：
 
 > ### ▶ 这是一个标题 *
