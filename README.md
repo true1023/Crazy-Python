@@ -29,28 +29,20 @@ Python作为一个设计优美的交互式脚本语言，提供了许多人性�
 好了，那么我们开始吧！
 
 <h1>Table of Contents</h1>
-<!-- TOC -->
+<!-- TOC depthFrom:1 depthTo:3 -->
 
 - [示例结构说明](#示例结构说明)
 - [使用方法](#使用方法)
 - [:eyes: 例子](#eyes-例子)
     - [第一章: 撕裂大脑](#第一章-撕裂大脑)
         - [▶ 善变的字符串 *](#▶-善变的字符串-)
-            - [:bulb: 解释:](#bulb-解释)
         - [▶ 不变的哈希值](#▶-不变的哈希值)
-            - [:bulb: 解释](#bulb-解释)
         - [▶ 说了要执行就一定会执行！](#▶-说了要执行就一定会执行)
-            - [💡 解释:](#💡-解释)
         - [▶ 鸠占鹊巢 *](#▶-鸠占鹊巢-)
-            - [:bulb: 解释:](#bulb-解释-1)
         - [▶ 神奇赋值法](#▶-神奇赋值法)
-            - [:bulb: 解释:](#bulb-解释-2)
         - [▶ 时间的误会](#▶-时间的误会)
-            - [:blub: 解释](#blub-解释)
         - [▶ 特殊的数字们](#▶-特殊的数字们)
-            - [:blub: 解释:](#blub-解释)
         - [▶ A tic-tac-toe where X wins in the first attempt!](#▶-a-tic-tac-toe-where-x-wins-in-the-first-attempt)
-            - [💡 Explanation:](#💡-explanation)
     - [第二章: 瞒天过海](#第二章-瞒天过海)
         - [▶ Skipping lines?](#▶-skipping-lines)
     - [第三章: 注意地雷](#第三章-注意地雷)
