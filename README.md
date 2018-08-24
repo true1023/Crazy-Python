@@ -42,7 +42,15 @@ Python作为一个设计优美的交互式脚本语言，提供了许多人性�
         - [▶ 神奇赋值法](#▶-神奇赋值法)
         - [▶ 时间的误会](#▶-时间的误会)
         - [▶ 特殊的数字们](#▶-特殊的数字们)
-        - [▶ A tic-tac-toe where X wins in the first attempt!](#▶-a-tic-tac-toe-where-x-wins-in-the-first-attempt)
+        - [▶ 三子棋之一步取胜法](#▶-三子棋之一步取胜法)
+        - [▶ 没脑子的函数](#▶-没脑子的函数)
+        - [▶ `is not ...` 并不是  `is (not ...)`](#▶-is-not--并不是--is-not-)
+        - [▶ 尾部的逗号](#▶-尾部的逗号)
+        - [▶ 最后一个反斜杠](#▶-最后一个反斜杠)
+        - [▶ 纠结的not](#▶-纠结的not)
+        - [▶ 只剩一半的三引号](#▶-只剩一半的三引号)
+        - [▶ 消失的午夜零点](#▶-消失的午夜零点)
+        - [▶ 站错队的布尔型](#▶-站错队的布尔型)
     - [第二章: 瞒天过海](#第二章-瞒天过海)
         - [▶ Skipping lines?](#▶-skipping-lines)
     - [第三章: 注意地雷](#第三章-注意地雷)
@@ -443,12 +451,13 @@ Python解释器在执行`y = 257`的时候还不能意识到我们之前已经�
 * 这是一种专门针对交互式解释器环境的优化机制。 当你在控制面板中敲入两行命令的时候，这两行命令是分开编译的，所以他们也会单独进行优化。如果你准备把这个例子（两行分别赋值的例子）写进`.py`文件然后进行测试，那么你会发现结果跟写在一行是一样的，因为文件里的代码是一次性编译的。
 
 ---
-### ▶ A tic-tac-toe where X wins in the first attempt!
+
+### ▶ 三子棋之一步取胜法
 
 ```py
-# Let's initialize a row
+# 首先先来初始化一个1*3的一维数组
 row = [""]*3 #row i['', '', '']
-# Let's make a board
+# 然后再用二维数组模拟一个3*3的棋盘
 board = [row]*3
 ```
 
@@ -465,19 +474,19 @@ board = [row]*3
 [['X', '', ''], ['X', '', ''], ['X', '', '']]
 ```
 
-We didn't assign 3 "X"s or did we?
+我们只赋值了一个“X”为什么会出来三个呢？
 
-#### 💡 Explanation:
+#### :bulb: 解释:
 
-When we initialize `row` variable, this visualization explains what happens in the memory
+当我们初始化`row`变量的时候，下图显示的是内存中的变化
 
-![image](/images/tic-tac-toe/after_row_initialized.png)
+![image](./assets/1=3/after_row_initialized.png)
 
-And when the `board` is initialized by multiplying the `row`, this is what happens inside the memory (each of the elements `board[0]`, `board[1]` and `board[2]` is a reference to the same list referred by `row`)
+接着当变量`board`通过`[row]*3`初始化后，下图显示了内存的变化（其实最终每一个变量`board[0]`,`board[1]`,`board[2]`都引用了同一个`row`对象的内存地址）
 
-![image](/images/tic-tac-toe/after_board_initialized.png)
+![image](./assets/1=3/after_board_initialized.png)
 
-We can avoid this scenario here by not using `row` variable to generate `board`. (Asked in [this](https://github.com/satwikkansal/wtfpython/issues/68) issue).
+我们可以通过不使用`row`变量来阻止这种情况的发生
 
 ```py
 >>> board = [['']*3 for _ in range(3)]
@@ -485,6 +494,282 @@ We can avoid this scenario here by not using `row` variable to generate `board`.
 >>> board
 [['X', '', ''], ['', '', ''], ['', '', '']]
 ```
+
+---
+
+### ▶ 没脑子的函数
+
+```py
+funcs = []
+results = []
+for x in range(7):
+    def some_func():
+        return x
+    funcs.append(some_func)
+    results.append(some_func())
+
+funcs_results = [func() for func in funcs]
+```
+
+**Output:**
+```py
+>>> results
+[0, 1, 2, 3, 4, 5, 6]
+>>> funcs_results
+[6, 6, 6, 6, 6, 6, 6]
+```
+虽然我们每次把`some_func`函数加入到`funcs`列表里的时候`x`都不一样，但是`funcs`列表里的所有函数都返回了6.
+
+//下面这段代码也是这样
+
+```py
+>>> powers_of_x = [lambda x: x**i for i in range(10)]
+>>> [f(2) for f in powers_of_x]
+[512, 512, 512, 512, 512, 512, 512, 512, 512, 512]
+```
+
+#### :bulb: 解释
+
+- 当我们在一个循环中定义一个函数，并且在函数体中用了循环中的变量时，这个函数只会绑定这个变量本身，并不会绑定当前变量循环到的值。所以最终所有在循环中定义的函数都会使用循环变量最后的值做计算。
+
+- 如果你想实现心中想的那种效果，可以把循环变量当做一个参数传递进函数体。**为什么这样可以呢？**因为这样在函数作用域内会重新定义一个变量，不是循环里面的那个变量了。
+
+    ```py
+    funcs = []
+    for x in range(7):
+        def some_func(x=x):
+            return x
+        funcs.append(some_func)
+    ```
+
+    **Output:**
+    ```py
+    >>> funcs_results = [func() for func in funcs]
+    >>> funcs_results
+    [0, 1, 2, 3, 4, 5, 6]
+    ```
+
+---
+
+### ▶ `is not ...` 并不是  `is (not ...)`
+
+```py
+>>> 'something' is not None
+True
+>>> 'something' is (not None)
+False
+```
+
+#### :bulb: 解释
+
+- `is not` 是一个单独的二元运算符, 和分开使用的`is`和`not`作用是不同的。
+- `is not` 只有在两边的操作数相同时（id相同）结果才为`False`，否则为`True`
+
+---
+
+### ▶ 尾部的逗号
+
+**Output:**
+```py
+>>> def f(x, y,):
+...     print(x, y)
+...
+>>> def g(x=4, y=5,):
+...     print(x, y)
+...
+>>> def h(x, **kwargs,):
+  File "<stdin>", line 1
+    def h(x, **kwargs,):
+                     ^
+SyntaxError: invalid syntax
+>>> def h(*args,):
+  File "<stdin>", line 1
+    def h(*args,):
+                ^
+SyntaxError: invalid syntax
+```
+
+#### :bulb: 解释:
+
+- 末尾的逗号在函数参数列表最后并不总是合法的
+- 在Python中，参数列表里，有一部分使用前导逗号分隔的，有一部分是用后导逗号分隔的（比如`**kwargs`这种参数用前导逗号分隔，正常参数`x`用后导逗号分隔）。而这种情况就会导致有些参数列表里的逗号前后都没有用到，就会产生冲突导致编译失败。
+- **注意** 这种尾部逗号的问题已经在Python 3.6中被[修复](https://bugs.python.org/issue9232)了。然后[这里](https://bugs.python.org/issue9232#msg248399)有对各种尾部逗号用法的讨论。
+
+---
+
+### ▶ 最后一个反斜杠
+
+**Output:**
+```
+>>> print("\\ C:\\")
+\ C:\
+>>> print(r"\ C:")
+\ C:
+>>> print(r"\ C:\")
+
+    File "<stdin>", line 1
+      print(r"\ C:\")
+                     ^
+SyntaxError: EOL while scanning string literal
+```
+
+#### :bulb: 解释
+
+- 如果字符串前面声明了`r`，说明后面紧跟着的是一个原始字符串，反斜杠在这种字符串中是没有特殊意义的
+  ```py
+  >>> print(repr(r"craz\"y"))
+  'craz\\"y'
+  ```
+- 解释器实际上是怎么做的呢，虽然看起来仅仅是改变了反斜杠的转义特性，实际上，它（反斜杠）会把自己和紧跟着自己的下一个字符一起传入到解释器，用来供解释器做判断和转换。这也就是为什么当反斜杠在最后一个字符的时候会报错。
+
+---
+
+### ▶ 纠结的not
+
+```py
+x = True
+y = False
+```
+
+**Output:**
+```py
+>>> not x == y
+True
+>>> x == not y
+  File "<input>", line 1
+    x == not y
+           ^
+SyntaxError: invalid syntax
+```
+
+#### :bulb: 解释:
+
+* 操作符的优先级会影响表达式的计算顺序，并且在Python里，`==`操作符的优先级要高于`not`操作符。
+* 所以`not x == y`等于 `not (x == y)`，又等于`not (True == False)`，最终计算结果就会是`True`。
+* 但是`x == not y`会报错是因为这个表达式可以等价于`(x == not) y`，而不是我们第一眼认为的`x == (not y)`。
+
+---
+
+### ▶ 只剩一半的三引号
+
+**Output:**
+```py
+>>> print('crazypython''')
+wtfpython
+>>> print("crazypython""")
+wtfpython
+>>> # 下面的语句将会产生语法错误
+>>> # print('''crazypython')
+>>> # print("""crazypython")
+```
+
+#### :bulb: 解释:
++ Python支持隐试的[字符串连接](https://docs.python.org/2/reference/lexical_analysis.html#string-literal-concatenation),比如下面这样，
+  ```
+  >>> print("crazy" "python")
+  crazypython
+  >>> print("crazy" "") # or "crazy"""
+  crazy
+  ```
++ 在Python中，`'''` 和 `"""` 也是一种字符串界定符，所以如果Python解释器发现了其中一个，那么就会一直在后面找对称的另一个界定符，这也就是为什么上面例子里注释掉的语句会有语法错误，因为解释器在后面找不到和前面`'''`或`"""`配对的界定符。
+
+---
+
+### ▶ 消失的午夜零点
+
+```py
+from datetime import datetime
+
+midnight = datetime(2018, 1, 1, 0, 0)
+midnight_time = midnight.time()
+
+noon = datetime(2018, 1, 1, 12, 0)
+noon_time = noon.time()
+
+if midnight_time:
+    print("Time at midnight is", midnight_time)
+
+if noon_time:
+    print("Time at noon is", noon_time)
+```
+
+**Output:**
+```sh
+('Time at noon is', datetime.time(12, 0))
+```
+午夜时间并没有被打印出来
+
+#### :bulb: 解释:
+
+在Python 3.5以前, 对于被赋值为UTC零点的`datetime.time`对象的布尔值，会被认为是`False`。这是一个在用`if obj:`这种语句的时候经常会忽略的特性，所以我们在写这种`if`语句的时候，要注意判断`obj`是否等于`null`或者空。
+
+---
+
+### ▶ 站错队的布尔型
+
+1\.
+```py
+# 一个计算列表里布尔型和Int型数量的例子
+mixed_list = [False, 1.0, "some_string", 3, True, [], False]
+integers_found_so_far = 0
+booleans_found_so_far = 0
+
+for item in mixed_list:
+    if isinstance(item, int):
+        integers_found_so_far += 1
+    elif isinstance(item, bool):
+        booleans_found_so_far += 1
+```
+
+**Output:**
+```py
+>>> booleans_found_so_far
+0
+>>> integers_found_so_far
+4
+```
+
+2\.
+```py
+another_dict = {}
+another_dict[True] = "JavaScript"
+another_dict[1] = "Ruby"
+another_dict[1.0] = "Python"
+```
+
+**Output:**
+```py
+>>> another_dict[True]
+"Python"
+```
+
+3\.
+```py
+>>> some_bool = True
+>>> "crazy"*some_bool
+'crazy'
+>>> some_bool = False
+>>> "crazy"*some_bool
+''
+```
+
+#### :bulb: 解释:
+
+* 布尔型(Booleans)是 `int`类型的一个子类型(bool is instance of int in Python)
+  ```py
+  >>> isinstance(True, int)
+  True
+  >>> isinstance(False, int)
+  True
+  ```
+
+* `True`的整形值是`1`，`False`的整形值是`0`
+  ```py
+  >>> True == 1 == 1.0 and False == 0 == 0.0
+  True
+  ```
+
+* StackOverFlow有针对这个问题背后原理的[解答](https://stackoverflow.com/a/8169049/4354153)。
 
 ---
 
