@@ -55,6 +55,7 @@ Python作为一个设计优美的交互式脚本语言，提供了许多人性�
         - [▶ None的产生](#▶-none的产生)
         - [▶ 不可修改的元组](#▶-不可修改的元组)
         - [▶ 消失的变量e](#▶-消失的变量e)
+        - [▶ 亦真还假](#▶-亦真还假)
     - [第二章: 瞒天过海](#第二章-瞒天过海)
         - [▶ Skipping lines?](#▶-skipping-lines)
     - [第三章: 注意地雷](#第三章-注意地雷)
@@ -982,6 +983,26 @@ NameError: name 'e' is not defined
     >>> print e
     # 什么都没有打印出来
     ```
+
+---
+
+### ▶ 亦真还假
+
+```py
+True = False
+if True == False:
+    print("It's true of false?")
+```
+
+**Output:**
+```
+It's true of false?
+```
+
+#### :bulb: 解释:
+
+- 一开始， Python是没有`bool`布尔类型的（人们用0代表假用非0代表真）。后来增加了`True`，`False`还有`bool`类型，但是为了向前兼容，所以并没有`True`和`False`的关键字常量，只不过作为一个内部变量出现。
+- Python 3是不向前兼容的，所以终于修复了这个问题，同时也要注意上面的例子在Python 3.X版本下是运行不了的！
 
 ---
 
