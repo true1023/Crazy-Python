@@ -65,7 +65,8 @@ Python作为一个设计优美的交互式脚本语言，提供了许多人性�
         - [▶ 移形换位 *](#▶-移形换位-)
         - [▶ 到底哪里出错了呢？](#▶-到底哪里出错了呢)
     - [第三章: 隐藏的陷阱](#第三章-隐藏的陷阱)
-        - [▶ Modifying a dictionary while iterating over it](#▶-modifying-a-dictionary-while-iterating-over-it)
+        - [▶ 不要在迭代一个字典的时候修改这个字典！](#▶-不要在迭代一个字典的时候修改这个字典)
+        - [▶ 删不掉的对象 *](#▶-删不掉的对象-)
     - [第四章: 隐藏的宝藏](#第四章-隐藏的宝藏)
         - [▶ Okay Python, Can you make me fly? *](#▶-okay-python-can-you-make-me-fly-)
     - [第五章: 杂项](#第五章-杂项)
@@ -1305,7 +1306,82 @@ def square(x):
 ## 第三章: 隐藏的陷阱
 
 
-### ▶ Modifying a dictionary while iterating over it
+### ▶ 不要在迭代一个字典的时候修改这个字典！
+
+```py
+x = {0: None}
+
+for i in x:
+    del x[i]
+    x[i+1] = None
+    print(i)
+```
+
+**Output (Python 2.7- Python 3.5):**
+
+```
+0
+1
+2
+3
+4
+5
+6
+7
+```
+
+这个迭代会准确运行**八**次停止。
+
+#### :bulb: 解释:
+
+* 首先我是不赞成在迭代一个字典的时候对这个字典做修改的。
+* 这个迭代正好运行了八次是因为正好到了一个点，到了这个点后，这个字典对象需要重新调整大小用来容纳足够的关键字(keys)（我们在循环中已经连续做了八次删除了，当然需要重新调整字典的大小了）。实际上这个点在哪取决于Python的具体实现细节。
+* 对删除键值的处理和什么时候触发调整字典大小会根据不同Python的版本而有所不同。
+
+---
+
+### ▶ 删不掉的对象 *
+
+```py
+class SomeClass:
+    def __del__(self):
+        print("Deleted!")
+```
+
+**Output:**
+1\.
+```py
+>>> x = SomeClass()
+>>> y = x
+>>> del x # 这里应该输出 "Deleted!"
+>>> del y
+Deleted!
+```
+
+啧.....最后还是输出了。你可能已经猜到了，我们第一次尝试删除`x`的时候，`__del__`方法并没有被调用。现在我们在上面例子的基础上再加几句代码。
+
+2\.
+```py
+>>> x = SomeClass()
+>>> y = x
+>>> del x
+>>> y # 检查y是否存在
+<__main__.SomeClass instance at 0x7f98a1a67fc8>
+>>> del y # 就像上一个例子一样，这里应该输出"Deleted!"
+>>> globals() # 嗯......好像并没有输出。让我们检查一下全局变量看看。
+Deleted!
+{'__builtins__': <module '__builtin__' (built-in)>, 'SomeClass': <class __main__.SomeClass at 0x7f98a1a5f668>, '__package__': None, '__name__': '__main__', '__doc__': None}
+```
+
+好吧，最后还是输出了(好奇怪的说):confused:
+
+#### :bulb: 解释:
++ `del x`并不会直接调用`x.__del__()`。
++ 当调用`del x`的时候，Python会把所有x指向的对象的引用数减一（在这里就是前面实例化的对象`SomeClass()`），只有当这个对象的引用数为零的时候，才会调用`__del__()`。
++ 在第二个例子中，`y.__del__()`没有被调用时因为前面的语句(`>>> y`)引用了同一个对象(SomeClass())，增加了这个对象的引用数，所以在`del y`以后这个对象的引用数并没有变成零。
++ 调用`globals`会检查并销毁没用的引用，这时候针对上面对象(`SomeClass()`)的引用数就变成零了，"Deleted!"就被打印出来了。
+
+---
 
 ---
 
