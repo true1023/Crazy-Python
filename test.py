@@ -1,4 +1,3 @@
-x = {0: None,1:'3'}
-
-for i,value in x:
-	print(i)
+x = 1
+print([x for x in range(5)])
+print(x, ': x in global')
