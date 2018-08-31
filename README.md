@@ -70,6 +70,12 @@ Python作为一个设计优美的交互式脚本语言，提供了许多人性�
         - [▶ 删除正在迭代中的列表项](#▶-删除正在迭代中的列表项)
         - [▶ 被泄露出去的循环变量!](#▶-被泄露出去的循环变量)
         - [▶ 小心那些有默认值的可变参数!](#▶-小心那些有默认值的可变参数)
+        - [▶ 抓住这些异常！](#▶-抓住这些异常)
+        - [▶ 相同的操作，不同的结果](#▶-相同的操作不同的结果)
+        - [▶ 作用域之外的变量](#▶-作用域之外的变量)
+        - [▶ 小心那些链式操作符](#▶-小心那些链式操作符)
+        - [▶ 被忽略的类变量](#▶-被忽略的类变量)
+        - [▶ 小心处理元组](#▶-小心处理元组)
     - [第四章: 隐藏的宝藏](#第四章-隐藏的宝藏)
         - [▶ Okay Python, Can you make me fly? *](#▶-okay-python-can-you-make-me-fly-)
     - [第五章: 杂项](#第五章-杂项)
@@ -1563,6 +1569,297 @@ def some_func(default_arg=[]):
         default_arg.append("some_string")
         return default_arg
     ```
+
+---
+
+### ▶ 抓住这些异常！
+
+```py
+some_list = [1, 2, 3]
+try:
+    # 这里应该会抛出一个 ``IndexError`` 异常
+    print(some_list[4])
+except IndexError, ValueError:
+    print("Caught!")
+
+try:
+    # 这里会抛出一个 ``ValueError`` 异常
+    some_list.remove(4)
+except IndexError, ValueError:
+    print("Caught again!")
+```
+
+**Output (Python 2.x):**
+```py
+Caught!
+
+ValueError: list.remove(x): x not in list
+```
+
+**Output (Python 3.x):**
+```py
+  File "<input>", line 3
+    except IndexError, ValueError:
+                     ^
+SyntaxError: invalid syntax
+```
+
+#### :bulb: 解释
+
+* 如果想在`except`语句中同时捕获多个异常类型，需要把这些类型写成元组(tuple)的形式放在第一个参数的位置。第二个参数是一个可选参数，用来绑定具体捕获异常后的对象。比如，
+  ```py
+  some_list = [1, 2, 3]
+  try:
+     # 这里会产生一个 ``ValueError`` 异常
+     some_list.remove(4)
+  except (IndexError, ValueError), e:
+     print("Caught again!")
+     print(e)
+  ```
+  **Output (Python 2.x):**
+  ```
+  Caught again!
+  list.remove(x): x not in list
+  ```
+  **Output (Python 3.x):**
+  ```py
+    File "<input>", line 4
+      except (IndexError, ValueError), e:
+                                       ^
+  IndentationError: unindent does not match any outer indentation level
+  ```
+
+* 在Python 3中已经弃用了使用逗号分隔异常类型和异常变量了；而是要使用`as`语法了。比如，
+  ```py
+  some_list = [1, 2, 3]
+  try:
+      some_list.remove(4)
+
+  except (IndexError, ValueError) as e:
+      print("Caught again!")
+      print(e)
+  ```
+  **Output:**
+  ```
+  Caught again!
+  list.remove(x): x not in list
+  ```
+
+---
+
+### ▶ 相同的操作，不同的结果
+
+1\.
+```py
+a = [1, 2, 3, 4]
+b = a
+a = a + [5, 6, 7, 8]
+```
+
+**Output:**
+```py
+>>> a
+[1, 2, 3, 4, 5, 6, 7, 8]
+>>> b
+[1, 2, 3, 4]
+```
+
+2\.
+```py
+a = [1, 2, 3, 4]
+b = a
+a += [5, 6, 7, 8]
+```
+
+**Output:**
+```py
+>>> a
+[1, 2, 3, 4, 5, 6, 7, 8]
+>>> b
+[1, 2, 3, 4, 5, 6, 7, 8]
+```
+
+#### :bulb: 解释:
+
+* `a += b` 和 `a = a + b`的内部处理流程有时候会根据操作数的不同有所不同。比如*`op=`*这种操作符(比如`+=`,`-=`,`*=`这样)，针对列表(list)对象这两个表达式就会有不一样的内在表现。
+
+* 表达式`a = a + [5,6,7,8]`会生成一个新的对象，并且`a`会引用这个新生成的对象，`b`变量不会变（继续引用之前的列表对象`[1,2,3,4]`）。
+
+* 表达式`a += [5,6,7,8]`就不会生成一个新对象，它实际上是在原有对象的基础上又“扩展了”几个元素，也就是所谓的就地改变(in-place)。所以这个时候`a`,`b`两个变量还是同时引用的一个对象。
+
+---
+
+### ▶ 作用域之外的变量
+
+```py
+a = 1
+def some_func():
+    return a
+
+def another_func():
+    a += 1
+    return a
+```
+
+**Output:**
+```py
+>>> some_func()
+1
+>>> another_func()
+UnboundLocalError: local variable 'a' referenced before assignment
+```
+
+#### :bulb: 解释:
+* 当你在某个作用域给一个变量赋值的时候，这个变量就会自动变成这个作用域的变量。所以`a`会变成`another_func`这个函数的局部变量，但是又没有在这个函数作用域内正确的初始化`a`变量，结果就发生了异常。
+* 这篇[文章](http://sebastianraschka.com/Articles/2014_python_scope_and_namespaces.html)很好的解释了命名空间和作用域是如何在Python中起作用的(是英文版，等有时间我会翻译一下，如果有热心的同学帮忙就更好啦！)。
+* 如果想在局部作用域内使用全局作用域的变量`a`，需要使用`global`关键字。
+  ```py
+  def another_func()
+      global a
+      a += 1
+      return a
+  ```
+
+  **Output:**
+  ```py
+  >>> another_func()
+  2
+  ```
+
+---
+
+### ▶ 小心那些链式操作符
+
+```py
+>>> (False == False) in [False] # 没问题,OK？
+False
+>>> False == (False in [False]) # 这个也OK对吧？
+False
+>>> False == False in [False] # 这个呢？是不是开始不对了？
+True
+
+>>> True is False == False
+False
+>>> False is False is False
+True
+
+>>> 1 > 0 < 1
+True
+>>> (1 > 0) < 1
+False
+>>> 1 > (0 < 1)
+False
+```
+
+#### :bulb: 解释:
+
+按照 https://docs.python.org/2/reference/expressions.html#not-in 里面说的：
+
+> 如果 a, b, c, ..., y, z 这些是表达式，op1, op2, ..., opN 这些是比较符，那么 a op1 b op2 c ... y opN z 就等于 a op1 b and b op2 c and ... y opN z, 除非其中有些表达式最多只能计算一次。
+
+这种模式运行在像 `a == b == c` 和 `0 <=x <= 100` 这种语句里就会产生很有意思的结果了，就像上边那些例子一样。
+
+* `False is False is False` 等于 `(False is False) and (False is False)`。
+* `True is False == False` 等于 `True is False and False == False` 而且第一部分 (`True is False`) 等于 `False`, 所以整个表达式结果就为 `False`。
+* `1 > 0 < 1` 等于 `1 > 0 and 0 < 1` 最后结果等于 `True`。
+* 表达式 `(1 > 0) < 1` 等于 `True < 1` 而且
+  ```py
+  >>> int(True)
+  1
+  >>> True + 1 #这个跟例子没啥关系，就是想告诉你们布尔值也可以这样玩^_^
+  2
+  ```
+  所以, `1 < 1`也等于`False`
+
+---
+
+### ▶ 被忽略的类变量
+
+1\.
+```py
+x = 5
+class SomeClass:
+    x = 17
+    y = (x for i in range(10))
+```
+
+**Output:**
+```py
+>>> list(SomeClass.y)[0]
+5
+```
+
+2\.
+```py
+x = 5
+class SomeClass:
+    x = 17
+    y = [x for i in range(10)]
+```
+
+**Output (Python 2.x):**
+```py
+>>> SomeClass.y[0]
+17
+```
+
+**Output (Python 3.x):**
+```py
+>>> SomeClass.y[0]
+5
+```
+
+#### :bulb: 解释
+- 如果一个类定义内嵌套了一个子作用域，那么在这个作用域内部会忽略所有这个类级别的变量绑定。
+- 一个生成器(generator)表达式有自己的作用域
+- 从Python 3.X开始，列表生成式也有自己的作用域了。
+
+![name-ignore-class-scope](./assets/name-ignore-class-scope/name-ignore-class-scope.png)
+
+---
+### ▶ 小心处理元组
+
+1\.
+```py
+x, y = (0, 1) if True else None, None
+```
+
+**Output:**
+```
+>>> x, y  # 期待的结果是 (0, 1)
+((0, 1), None)
+```
+
+基本每一个Python程序员都会遇到过下面这种情况。
+
+2\.
+```py
+t = ('one', 'two')
+for i in t:
+    print(i)
+
+t = ('one')
+for i in t:
+    print(i)
+
+t = ()
+print(t)
+```
+
+**Output:**
+```py
+one
+two
+o
+n
+e
+tuple()
+```
+
+#### :bulb: 解释:
+* 第一个例子里，想要得到期待的结果的写法应该是`x, y = (0, 1) if True else (None, None)`，要显式声明元组。
+* 第二个例子里，想要得到期待的结果的写法应该是 `t = ('one',)` 或者 `t = 'one',`（原来的少了逗号）否则解释器会把变量`t`当做一个`str`字符串处理挨个迭代里面的每一个字符。
+* `()`是一个特殊的标识符专门用来表示空元组(`tuple`)。
 
 ---
 
