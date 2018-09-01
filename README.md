@@ -76,8 +76,15 @@ Python作为一个设计优美的交互式脚本语言，提供了许多人性�
         - [▶ 小心那些链式操作符](#▶-小心那些链式操作符)
         - [▶ 被忽略的类变量](#▶-被忽略的类变量)
         - [▶ 小心处理元组](#▶-小心处理元组)
-    - [第四章: 隐藏的宝藏](#第四章-隐藏的宝藏)
-        - [▶ Okay Python, Can you make me fly? *](#▶-okay-python-can-you-make-me-fly-)
+    - [第四章: 一起来找些有趣的东西！](#第四章-一起来找些有趣的东西)
+        - [▶ 人生苦短，我用Python *](#▶-人生苦短我用python-)
+        - [▶ 为什么要用`goto`？ *](#▶-为什么要用goto-)
+        - [▶ 试试用大括号？ *](#▶-试试用大括号-)
+        - [▶ 不等号的争议 *](#▶-不等号的争议-)
+        - [▶ 就算Python也知道爱是个复杂的东西 *](#▶-就算python也知道爱是个复杂的东西-)
+        - [▶ 这些语句是存在的！](#▶-这些语句是存在的)
+        - [▶ 无限(Inpinity) *](#▶-无限inpinity-)
+        - [▶ 被修改的类成员 *](#▶-被修改的类成员-)
     - [第五章: 杂项](#第五章-杂项)
         - [▶ `+=` is faster](#▶--is-faster)
 - [贡献](#贡献)
@@ -378,7 +385,7 @@ array_2[:] = [1,2,3,4,5]
 [1,2,3,4,5]
 ```
 
-#### :blub: 解释
+#### :bulb: 解释
 
 - 在[生成器](https://wiki.python.org/moin/Generators)表达式中,`in`语句会在声明阶段求值，但是条件判断语句（在这里是`array.count(x) > 0`）会在真正的运行阶段(runtime)求值。
 - 在生成器运行之前，`array`已经被重新赋值为`[2, 8, 22]`了，所以这个时候再用`count`函数判断`2`,`8`,`22`在原列表中的数量，只有`8`是数量大于`0`的，所以最后这个生成器只返回了一个`8`是符合条件的。
@@ -408,7 +415,7 @@ False
 True
 ```
 
-#### :blub: 解释:
+#### :bulb: 解释:
 
 **`is`和`==`的区别**
 
@@ -1866,11 +1873,251 @@ tuple()
 ---
 
 
-## 第四章: 隐藏的宝藏
+## 第四章: 一起来找些有趣的东西！
 
-This section contains few of the lesser-known interesting things about Python that most beginners like me are unaware of (well, not anymore).
+这一章包含了一些有趣的但是鲜为人知的彩蛋，大部分的Python新手都很少有人知道，就比如我（当然，现在我知道了）。
 
-### ▶ Okay Python, Can you make me fly? *
+### ▶ 人生苦短，我用Python *
+
+首先，我先引用下面这个模块，然后......
+
+```py
+import antigravity
+```
+
+**Output:**
+嘘....这个秘密可没几个人知道！
+
+#### :bulb: 解释: 
++ `antigravity` 模块是针对Python开发者的一个小彩蛋。
++ `import antigravity` 会打开一个指向 [classic XKCD comic](http://xkcd.com/353/)的网站，一个关于Python的漫画网站。
++ 而且，这还是一个俄罗斯套娃彩蛋，也就是说**这个彩蛋中还包含着另一个彩蛋**。如果你打开这个模块的[代码](https://github.com/python/cpython/blob/master/Lib/antigravity.py#L7-L17)，你会发现代码中还定义了一个实现[geohashing算法](https://xkcd.com/426/)的函数（这个算法是一个利用股票市场数据随机生成经度纬度坐标的算法）。
+
+---
+
+### ▶ 为什么要用`goto`？ *
+
+```py
+from goto import goto, label
+for i in range(9):
+    for j in range(9):
+        for k in range(9):
+            print("I'm trapped, please rescue!")
+            if k == 2:
+                goto .breakout #从一个深层循环内跳出
+label .breakout
+print("Freedom!")
+```
+
+**Output (Python 2.3):**
+```py
+I'm trapped, please rescue!
+I'm trapped, please rescue!
+Freedom!
+```
+
+#### :bulb: 解释:
+- `goto`模块是作为2004年的愚人节(2004.4.1)玩笑[发布](https://mail.python.org/pipermail/python-announce-list/2004-April/002982.html)的，只有Python 2.3版本有`goto`模块。
+- 当前版本的Python是没有这个模块的（如果你用的是conda甚至不能下载到2.3版本的Python）。
+- 虽然上面版本可以使用`goto`，但是也请不要使用它。[这里](https://docs.python.org/3/faq/design.html#why-is-there-no-goto)是为什么当前版本没有`goto`模块的原因。
+
+---
+
+### ▶ 试试用大括号？ *
+
+如果你不太习惯Python中用空格缩进来表示语句段(scopes)的方法，可以通过引用`__future__`模块来使用C语言大括号({})形式的表示方法来表示语句段，
+
+```py
+from __future__ import braces
+```
+
+**Output:**
+```py
+  File "some_file.py", line 1
+    from __future__ import braces
+SyntaxError: not a chance
+```
+
+想用大括号？不可能的，如果你不服气，用Java去。
+
+#### :bulb: 解释:
++ `__future__`模块一般用来提供未来Python版本才拥有的一些特性。当然，在这个例子里，"future"这个词本身也算是对大括号的嘲讽。
++ 这是一个Python社区针对大括号这个问题设计出来的一个彩蛋。
+
+---
+
+### ▶ 不等号的争议 *
+
+**Output (Python 3.x)**
+```py
+>>> from __future__ import barry_as_FLUFL
+>>> "Ruby" != "Python" # 这句话没有任何争议
+  File "some_file.py", line 1
+    "Ruby" != "Python"
+              ^
+SyntaxError: invalid syntax
+
+>>> "Ruby" <> "Python"
+True
+```
+
+直接看解释吧。
+
+#### :bulb: 解释:
+- 上面的问题起源自一个已经淘汰的Python修正包[PEP-401](https://www.python.org/dev/peps/pep-0401/)，发布于2009年的4月1日（明白为什么它会被淘汰了吧）。
+- 下面引用 PEP-401 的内容
+  > 为了让你们认识到在Python3.0中 != 这种逻辑不等式是多么的不好用，FLUFL引用会使解释器禁止这种语法只允许 <> 这种便利的逻辑不等式。
+
+---
+
+### ▶ 就算Python也知道爱是个复杂的东西 *
+
+```py
+import this
+```
+
+Wait, what's **this**? `this` is love :heart:
+（译注：我认为这句话原汁原味的看才能体会其中的乐趣，就不翻译了😊）
+
+**Output:**
+```
+The Zen of Python, by Tim Peters
+
+Beautiful is better than ugly.
+Explicit is better than implicit.
+Simple is better than complex.
+Complex is better than complicated.
+Flat is better than nested.
+Sparse is better than dense.
+Readability counts.
+Special cases aren't special enough to break the rules.
+Although practicality beats purity.
+Errors should never pass silently.
+Unless explicitly silenced.
+In the face of ambiguity, refuse the temptation to guess.
+There should be one-- and preferably only one --obvious way to do it.
+Although that way may not be obvious at first unless you're Dutch.
+Now is better than never.
+Although never is often better than *right* now.
+If the implementation is hard to explain, it's a bad idea.
+If the implementation is easy to explain, it may be a good idea.
+Namespaces are one honking great idea -- let's do more of those!
+```
+
+这些（指上面输出的内容）就是Python之道！
+
+```py
+>>> love = this
+>>> this is love
+True
+>>> love is True
+False
+>>> love is False
+False
+>>> love is not True or False
+True
+>>> love is not True or False; love is love  # 爱(love)是个复杂的东西，不是吗？
+True
+```
+
+#### :bulb: 解释:
+
+* `this`模块是一个针对Python之道做阐述的彩蛋([PEP 20](https://www.python.org/dev/peps/pep-0020))。
+* 但是这并没有完，如果你看看这个模块的实现代码[this.py](https://hg.python.org/cpython/file/c3896275c0f6/Lib/this.py)。你会发现一个更加有趣的事情，那就是这个代码本身就违反了上面输出的Python之道（当然，我觉得这也是唯一一处违反的地方）。
+* 关于`love is not True or False; love is love`这句话，它解释的很对，不是吗？
+
+---
+
+### ▶ 这些语句是存在的！
+
+**循环语句对应的`else`语句.** 下面是一个标准的例子:
+
+```py
+  def does_exists_num(l, to_find):
+      for num in l:
+          if num == to_find:
+              print("Exists!")
+              break
+      else:
+          print("Does not exist")
+```
+
+**Output:**
+```py
+>>> some_list = [1, 2, 3, 4, 5]
+>>> does_exists_num(some_list, 4)
+Exists!
+>>> does_exists_num(some_list, -1)
+Does not exist
+```
+
+**异常处理对应的`else`语句** 看例子,
+
+```py
+try:
+    pass
+except:
+    print("Exception occurred!!!")
+else:
+    print("Try block executed successfully...")
+```
+
+**Output:**
+```py
+Try block executed successfully...
+```
+
+#### :bulb: 解释:
+- 当一个`else`语句紧跟在一个循环语句后面的时候，只有当循环语句块内有明确使用`break`退出，否则所有循环结束就会执行`else`语句块。
+- 跟在`try`语句块后面的`else`语句，又叫做“完成语句(completion clause)”。意味着如果`try`语句块的内容顺利运行完毕，那么就会进入到`else`语句块。
+
+---
+
+### ▶ 无限(Inpinity) *
+
+**Output (Python 3.x):**
+```py
+>>> infinity = float('infinity')
+>>> hash(infinity)
+314159
+>>> hash(float('-inf'))
+-314159
+```
+
+#### :bulb: 解释:
+- 无限(infinity)的哈希值是 10⁵ x π.
+- 有趣的是, 在Python3中，`float('-inf')`的哈希值是"-10⁵ x π", 但是在Python2中是"-10⁵ x e"（正无穷还是一样的哈希值）。
+
+---
+
+### ▶ 被修改的类成员 *
+
+```py
+class Yo(object):
+    def __init__(self):
+        self.__honey = True
+        self.bitch = True
+```
+
+**Output:**
+```py
+>>> Yo().bitch
+True
+>>> Yo().__honey
+AttributeError: 'Yo' object has no attribute '__honey'
+>>> Yo()._Yo__honey
+True
+```
+
+为什么非要`Yo()._Yo__honey`才对? 如果有印度朋友他一定会懂这个梗的（好吧，我猜不会有印度人看一个中文的文章，Yo Yo Honey Singh是一个印度著名rapper，这就是梗，也是为什么这个类要起名Yo，哈哈）.
+
+#### :bulb: 解释:
+
+* [名称混淆](https://en.wikipedia.org/wiki/Name_mangling)是一种用来避免命名空间下命名冲突的技术。
+* 在Python里，如果某个类成员的名称以`__`（两个下划线）开头，并且不以两个以上的下划线结尾（这就意味着你想定义一个私有变量，但是Python是没有私有变量的），那么编辑器就会自动在这个成员名称之前加上`_NameOfTheClass`（在这里就是`_Yo`），来防止子类不小心访问修改到这个成员属性。
+* 所以，当要访问`__honey`这个成员属性的时候，我们需要在前面加上`_Yo`来进行访问。
+
+---
 
 ---
 

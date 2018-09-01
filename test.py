@@ -1,2 +1,4 @@
-x, y = (0,1) if True else None, None
-print(x,y)
+from __future__ import barry_as_FLUFL
+import sys
+print(sys.version)
+"Ruby" >< "Python"
