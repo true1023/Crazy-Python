@@ -86,7 +86,10 @@ Python作为一个设计优美的交互式脚本语言，提供了许多人性�
         - [▶ 无限(Inpinity) *](#▶-无限inpinity-)
         - [▶ 被修改的类成员 *](#▶-被修改的类成员-)
     - [第五章: 杂项](#第五章-杂项)
-        - [▶ `+=` is faster](#▶--is-faster)
+        - [▶ `+=`更快](#▶-更快)
+        - [▶ 超长字符串!](#▶-超长字符串)
+        - [▶ 字符串到浮点数的转换](#▶-字符串到浮点数的转换)
+        - [▶ 最后一些小特点集合](#▶-最后一些小特点集合)
 - [贡献](#贡献)
 - [感谢](#感谢)
 - [:mortar_board: 版权声明](#mortar_board-版权声明)
@@ -2124,14 +2127,207 @@ True
 ## 第五章: 杂项
 
 
-### ▶ `+=` is faster
+### ▶ `+=`更快
+
+```py
+# 使用"+"连接三个字符串:
+>>> timeit.timeit("s1 = s1 + s2 + s3", setup="s1 = ' ' * 100000; s2 = ' ' * 100000; s3 = ' ' * 100000", number=100)
+0.25748300552368164
+# 使用"+="连接三个字符串:
+>>> timeit.timeit("s1 += s2 + s3", setup="s1 = ' ' * 100000; s2 = ' ' * 100000; s3 = ' ' * 100000", number=100)
+0.012188911437988281
+```
+
+#### :bulb: 解释:
++ 当需要连接的字符串超过两个的时候，使用`+=`会比使用`+`更快。（比如上面的例子`s1 += s2 + s3`中的`s1`）,因为第一个字符串不会在做链接的时候销毁重建（因为`+=`操作符是就地操作的，上面多次已经提到过这个符号特性）。
+
+---
+
+### ▶ 超长字符串!
+
+```py
+#使用加号连接字符串
+def add_string_with_plus(iters):
+    s = ""
+    for i in range(iters):
+        s += "xyz"
+    assert len(s) == 3*iters
+
+#使用比特流连接字符串
+def add_bytes_with_plus(iters):
+    s = b""
+    for i in range(iters):
+        s += b"xyz"
+    assert len(s) == 3*iters
+
+#使用format函数连接字符串
+def add_string_with_format(iters):
+    fs = "{}"*iters
+    s = fs.format(*(["xyz"]*iters))
+    assert len(s) == 3*iters
+
+#使用数组连接字符串
+def add_string_with_join(iters):
+    l = []
+    for i in range(iters):
+        l.append("xyz")
+    s = "".join(l)
+    assert len(s) == 3*iters
+
+#将列表转换成字符串
+def convert_list_to_string(l, iters):
+    s = "".join(l)
+    assert len(s) == 3*iters
+```
+
+**Output:**
+```py
+>>> timeit(add_string_with_plus(10000))
+1000 loops, best of 3: 972 µs per loop
+>>> timeit(add_bytes_with_plus(10000))
+1000 loops, best of 3: 815 µs per loop
+>>> timeit(add_string_with_format(10000))
+1000 loops, best of 3: 508 µs per loop
+>>> timeit(add_string_with_join(10000))
+1000 loops, best of 3: 878 µs per loop
+>>> l = ["xyz"]*10000
+>>> timeit(convert_list_to_string(l, 10000))
+10000 loops, best of 3: 80 µs per loop
+```
+
+让我们把循环次数提升十倍。
+
+```py
+>>> timeit(add_string_with_plus(100000)) # 执行时间线性增加
+100 loops, best of 3: 9.75 ms per loop
+>>> timeit(add_bytes_with_plus(100000)) # 平方式增加
+1000 loops, best of 3: 974 ms per loop
+>>> timeit(add_string_with_format(100000)) # 线性增加
+100 loops, best of 3: 5.25 ms per loop
+>>> timeit(add_string_with_join(100000)) # 线性增加
+100 loops, best of 3: 9.85 ms per loop
+>>> l = ["xyz"]*100000
+>>> timeit(convert_list_to_string(l, 100000)) # 线性增加
+1000 loops, best of 3: 723 µs per loop
+```
+
+#### :bulb: 解释
+- 关于`timeit`模块的用法可以看[这里](https://docs.python.org/3/library/timeit.html)。这是一个用来测量程序块执行时间的模块。
+- 在Python中，不要试图用`+`来连接一个长字符串，因为`str`这个类型在Python中是一个不可变类型，这就意味着每次两个字符串对象连接程序都需要从左到右把两个字符串的每一个字符都复制一份。比如你现在要连接四个长度为10的字符串，那么程序需要拷贝 (10+10) + ((10+10)+10) + (((10+10)+10)+10) = 90 个字符，而不是40个。而且程序运行时间会随着你需要连接的字符串数量和字符数量呈平方形式的增长。（请参考`add_bytes_with_plus`函数的执行时间对比）。
+- 所以，建议大家使用`.format`或者`%`这种语法（但是，它们在连接短字符串的时候会比`+`号慢一点）。
+- 或者，如果已经提前获得了一个可以迭代的对象，则可以使用`''.join(iterable_object)`这种语法把它连接成字符串，这样的速度会比前几个都快。
+- 至于为什么`add_string_with_plus`不会像`add_bytes_with_plus`着这样成平方形式的提升执行时间，是因为前面例子里已经解释过的`+=`操作符的优化效果。如果把`s += "xyz"`这句话替换成了`s = s + "x" + "y" + "z"`,那么执行时间还是会呈平方形式的增加。
+  ```py
+  def add_string_with_plus(iters):
+      s = ""
+      for i in range(iters):
+          s = s + "x" + "y" + "z"
+      assert len(s) == 3*iters
+
+  >>> timeit(add_string_with_plus(10000))
+  100 loops, best of 3: 9.87 ms per loop
+  >>> timeit(add_string_with_plus(100000)) # 平方式增加
+  1 loops, best of 3: 1.09 s per loop
+  ```
+
+---
+
+### ▶ 字符串到浮点数的转换
+
+```py
+a = float('inf')
+b = float('nan')
+c = float('-iNf')  #这些字符串是大小写不敏感的
+d = float('nan')
+```
+
+**Output:**
+```py
+>>> a
+inf
+>>> b
+nan
+>>> c
+-inf
+>>> float('some_other_string')
+ValueError: could not convert string to float: some_other_string
+>>> a == -c #inf==inf
+True
+>>> None == None # None==None
+True
+>>> b == d #但是 nan!=nan 为真
+False
+>>> 50/a
+0.0
+>>> a/a
+nan
+>>> 23 + b
+nan
+```
+
+#### :bulb: 解释:
+
+`'inf'`和`'nan'`是一种特殊的字符串（大小写不敏感），它们两个都可以强制转换成`float`浮点类型，并且分别代表了数学意义上的"无限"(infinity)和"非数字"(not a number)。
+
+---
+
+### ▶ 最后一些小特点集合
+
+* `join()`是一个字符串的函数而不是一个列表附属函数（第一次用的人可能会觉得有点别扭）
+
+  **:bulb: 解释:**
+  如果`join()`作为一个字符串的方法，那么它就可以操作所有的可迭代类型(list, tuple, iterators)。但是如果它作为了一个列表(list)的方法，那它同样的也需要为另外那些可迭代类型构造专属的函数内容。
+
+* 下面这些句子看着奇怪，但是它们确实都是符合语法规则的
+  + `[] = ()` 在语法上是正确的 (把一个元组赋值给一个列表)
+  + `'a'[0][0][0][0][0]` 同样也是语法正确的，因为在Python中字符串是一个序列（可迭代的对象就可以使用索引值进行访问里面的元素）。
+  + `3 --0-- 5 == 8`和`--5 == 5`也都是语法正确的，并且最后结果都为`True`。
+
+* 给定一个数字类型变量`a`，`++a`和`--a`在Python中都是合法的，但是它们表达的意思和在C语言（或者C++，Java）中是完全不一样的。
+  ```py
+  >>> a = 5
+  >>> a
+  5
+  >>> ++a
+  5
+  >>> --a
+  5
+  ```
+
+  **:bulb: 解释:**
+  + 在Python语法中，是没有`++`这个操作符的。这个仅仅代表两个单独的`+`操作符而已。
+  + `++a`在Python中会被解析成`+(+a)`，也就等于`a`。同样的，`--a`也是这种情况。
+  + 这篇StackOverflow的[文章](https://stackoverflow.com/questions/3654830/why-are-there-no-and-operators-in-python)讨论了Python中没有自增自减符号背后的逻辑关系。
+
+* 多个Python线程并不会并发执行你的*Python代码*（你没看错，不会！）。也许你想同时开很多个线程然后并发执行你写的Python代码，但是，由于Python中存在一个叫[GIL](https://wiki.python.org/moin/GlobalInterpreterLock)(Global Interpreter Lock)的东西,所以最终你的线程还是会一个接着一个执行。Python的线程执行IO阻塞的任务比较拿手，但是如果想在CPU阻塞的任务中获得真正的并发能力，你需要了解一下Python的[multiprocessing](https://docs.python.org/2/library/multiprocessing.html)模块。
+
+* 列表切片的时候如果索引值超出界限并不会报错
+  ```py
+  >>> some_list = [1, 2, 3, 4, 5]
+  >>> some_list[111:]
+  []
+  ```
+
+* 在Python3中，`int('١٢٣٤٥٦٧٨٩')`会返回`123456789`。在Python中，十进制字符不仅包含十进制的数字，还包含了大部分可以表示为十进制数字形式的字符，比如，U+0660, ARABIC_INDIC DIGIT ZERO,一种印度阿拉伯语里代表数字0的字符。不过还没有中文的"一，二，三..."或者"壹，贰，叁..."这种，有人说是因为中文在unicode中的编码是不连续的，不过无论如何，现在确实还没有。这里有一篇[小故事](http://chris.improbable.org/2014/8/25/adventures-in-unicode-digits/)是关于这个特性的，英语版，有兴趣的同学可以看看。
+
+* `'abc'.count('') == 4`。 下面模拟实现了一个相似的`count()`方法,
+  ```py
+  def count(s, sub):
+      result = 0
+      for i in range(len(s) + 1 - len(sub)):
+          result += (s[i:i + len(sub)] == sub)
+      return result
+  ```
+  产生这个结果的原因是子串为空时会匹配上原始字符串长度为0时的字符（总之，看代码你会懂的）。
+
+---
 
 
 # 贡献
 
 欢迎任何补丁和修正！详细信息请看 [CONTRIBUTING.md](./CONTRIBUTING.md)
 
-如果想要参与讨论， 可以选择创建一个新的[issue](https://github.com/true1023/Crazy-Python/issues) 或者加我的 QQ752602742
+如果想要参与讨论， 可以选择创建一个新的[issue](https://github.com/true1023/Crazy-Python/issues) 或者加入我创建的gitter房间（就在最上面标题下面，点那个小图标就好啦）
 
 # 感谢
 
