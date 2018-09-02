@@ -93,6 +93,8 @@ Python作为一个设计优美的交互式脚本语言，提供了许多人性�
 - [贡献](#贡献)
 - [感谢](#感谢)
 - [:mortar_board: 版权声明](#mortar_board-版权声明)
+    - [帮助](#帮助)
+    - [关于pdf出版的问题](#关于pdf出版的问题)
 
 <!-- /TOC -->
 
@@ -2327,11 +2329,13 @@ nan
 
 欢迎任何补丁和修正！详细信息请看 [CONTRIBUTING.md](./CONTRIBUTING.md)
 
-如果想要参与讨论， 可以选择创建一个新的[issue](https://github.com/true1023/Crazy-Python/issues) 或者加入我创建的gitter房间（就在最上面标题下面，点那个小图标就好啦）
+如果想要参与讨论， 可以选择创建一个新的[issue](https://github.com/true1023/Crazy-Python/issues) 或者加入我创建的gitter[房间](https://gitter.im/Crazy-Python/Lobby)
 
 # 感谢
 
 这个仓库翻译自 [What the fu*k Python](https://github.com/satwikkansal/wtfpython)，迄今为止没谁需要感谢，感谢下原作者[Satwik Kansal](https://github.com/satwikkansal)吧。
+
+
 
 # :mortar_board: 版权声明
 
@@ -2340,3 +2344,13 @@ nan
        width="80" height="15" alt="WTFPL" /></a>
 
 :copyright: [True1023](https://github.com/true1023/)
+
+
+
+## 帮助
+
+如果你有任何好的想法和意见，请务必要分享给我。
+
+## 关于pdf出版的问题
+
+我会在修正一些bug后找时间生成pdf版本的Crazy Python，想要的小伙伴可以[发信](mailto:shi12li12@gmail.com)给我，有消息后我会通知大家。
