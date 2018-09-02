@@ -285,16 +285,24 @@ True
 * 但是为什么上面的例子里`is`操作符却产生了`False`? 我们再看一个例子。
   ```py
   class Crazy(object):
-    def __init__(self): print("I ")
-    def __del__(self): print("D ")
+    def __init__(self): print("I")
+    def __del__(self): print("D")
   ```
 
   **Output:**
   ```py
   >>> Crazy() is Crazy()
-  I I D D
+  I
+  I
+  D
+  D
+  False
   >>> id(Crazy()) == id(Crazy())
-  I D I D
+  I
+  D
+  I
+  D
+  True
   ```
   现在你可以发现, 不同的使用实例的方法会对实例销毁的时间产生影响。
 
