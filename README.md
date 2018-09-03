@@ -3,32 +3,27 @@
 <h1 align="center">疯狂的Python! 🐍</h1>
 <p align="center">一些有趣的鲜为人知的Python特性集合.</p>
 
-<a href="http://www.wtfpl.net/"><img
-       src="http://www.wtfpl.net/wp-content/uploads/2012/12/wtfpl-badge-4.png"
-       width="80" height="15" alt="WTFPL" /></a>
-
+[![WTFPL](https://img.shields.io/badge/License-WTFPL%202.0-lightgrey.svg?style=flat-square)](http://www.wtfpl.net/)
 [![Join the chat at https://gitter.im/Crazy-Python/Lobby](https://badges.gitter.im/Crazy-Python/Lobby.svg)](https://gitter.im/Crazy-Python/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 
 *本文翻译自[What the f*ck Python!](https://github.com/satwikkansal/wtfpython)*
 
-*本文全文为意译,若有错误,请联系作者*
-
-
-
+---
 
 Python作为一个设计优美的交互式脚本语言，提供了许多人性化的语法。但是也因为这个原因，有些Python的代码片段并不会按照用户想象的那样运行。
 
 这篇文章就让我们总结一下那些Python里反直觉的代码片段，并且深入研究一下其中的运行原理。
 
-下面的某些例子可能并不像是标题说的那样....嗯....疯狂(WTFs)，但是它们仍旧会揭示一些你从来没有意识到的Python的语言特性。
+下面的某些例子可能并不像是标题说的那样....嗯....反直觉，但是它们依旧会带你揭示一些你从来没有意识到的Python语言特性。
 
-我发现这是一种很好的学习编程语言内部原理的方法，我相信你会对这些东西感兴趣的！
+而且，我发现这也是一种很好的学习编程语言的方法，不过前提是你不要认为这篇文章会告诉你一切，抛砖引玉而已。相信我，你需要的知识都隐藏在互联网的某个角落里。
 
-如果你已经写了很久的Python代码，你可以把下面的这些例子当做一个挑战，试一试自己能不能在第一次就做对。也许你会感觉某些例子很熟悉，希望这些例子会勾起你通过自己的努力填上这些坑时的成就感。:sweat_smile:
+如果你已经写了很久的Python代码，你可以把下面的这些例子当做一个挑战，试一试自己能不能在第一次就猜对结果。也许某些例子里的坑你已经遇到过并且解决了，那么再次看见这个坑的时候我想你会为当时自己的努力而自豪的。:sweat_smile:
 
-好了，那么我们开始吧！
+好了，下面是正文！
 
-<h1>Table of Contents</h1>
+<h1>目录</h1>
 <!-- TOC depthFrom:1 depthTo:3 -->
 
 - [示例结构说明](#示例结构说明)
@@ -102,35 +97,35 @@ Python作为一个设计优美的交互式脚本语言，提供了许多人性�
 
 
 
-下面是例子里所使用的结构说明：
+下面是每个例子里通用的结构说明：
 
-> ### ▶ 这是一个标题 *
-> 首先是例子的标题，如果某个标题后面带有星号，说明这一段是最新的一个版本加上的。
+> ### ▶ 这里是例子的标题 *
+> 首先是例子的标题，如果某个标题后面带有星号，说明这是一个新加入的例子。
 > ```py
-> # 介绍会在这里写一些初始化代码
-> # 为下面的神奇时刻做准备...
+> # 第一个代码段里面会有一些初始化代码
+> # 为后续的输出代码段做准备...
 > ```
 >
 > **Output (Python version):**
 > ```py
 > >>> python语句，执行某个命令
-> 一些神奇的输出
+> 一些输出（可能你想得到，也可能想不到）
 > ```
-> (可选): 有可能会介绍一下输出的内容
+> (可选): 有可能会说明一下上面输出的内容
 >
 >
 > #### :bulb: 解释:
 >
 > * 简短的介绍发生了什么和为什么会产生这些输出。
 >   ```py
->   写一些初始化代码
+>   一些初始化代码
 >   ```
 >   **Output:**
 >   ```py
->   >>> 触发相应代码 # 这些代码会揭示为何会有上方那些神奇的输出内容
+>   >>> 执行代码 # 这些代码会展示为何会有上方那些输出内容
 >   ```
 
-**注意：** 所有的例子都是在 Python 3.5.2 环境下测试通过，理论上如果没有特殊声明，可以在所有的Python版本下运行。
+**注意：** 所有的代码都是在 Python 3.5.2 环境下测试通过，理论上如果没有特殊声明，可以在所有的Python版本下运行。
 
 # 使用方法
 
@@ -139,8 +134,8 @@ Python作为一个设计优美的交互式脚本语言，提供了许多人性�
 - 阅读输出结果并且，
     + 检查输出结果是否和你想的一样
     + 确认你是否知道产生这种结果背后的原理，
-        - 如果不知道，那么请仔细阅读解释章节（如果你看完解释还是不懂的话，别犹豫，提交一个 [issue](https://github.com/true1023/Crazy-Python/issues) 吧）
-        - 如果知道，那么给自己点个赞，继续看下一个例子
+        - 如果不知道，那么请仔细阅读解释章节（如果看完解释还是不懂的话，那就提交一个 [issue](https://github.com/true1023/Crazy-Python/issues) 吧）
+        - 如果知道，那么给就自己点个赞，继续看下一个例子
 
 # :eyes: 例子
 
@@ -189,7 +184,7 @@ False
 + 如果一个字符串实例已经驻村在了内存中，那么后续所有跟它值一样的变量都可以将指针指向这个内存中的字符串实例（这样就会节省内存空间）
 + 在上面这几段程序代码中，有几段的字符串明显驻留在了内存中供多个变量引用。 决定一个字符串是否会驻留在内存中是由这个字符串的实现方法决定的。下面是一些判断字符串变量是否会驻留内存的方法：
   * 所有长度为1或者0的字符串，全部会驻留
-  * 编译阶段（也就是把源代码编译成.pyc文件的阶段）的字符串被驻留在内存（`'crazy'`会驻留在内存，但是`''.join(['c','r','a','z','y'])`就不会）
+  * 编译阶段（也就是把源代码编译成.pyc文件的阶段）的字符串被驻留在内存，运行阶段就不会（`'crazy'`会驻留在内存，但是`''.join(['c','r','a','z','y'])`就不会）
   * 如果字符串包含除了ASCII字符，数字和下划线以外的字符，那么这个字符串就不会驻留内存。这就是为什么`'crazy!'`赋值给`a`,`b`的时候得到的结果是False，因为`!`感叹号。CPython中对这个特点的具体实现请参考[这里](https://github.com/python/cpython/blob/3.6/Objects/codeobject.c#L19)
   <img src="./assets/string-intern/string_intern.png" alt="">
 + 当变量`a`和`b`在同一行赋值`"crazy!"`的时候，Python的解释器会创建一个新的字符串实例，然后把这两个变量同时指向这一个实例。但是如果你用两行实现赋值的话，Python解释器就不会知道已经有一个`'crazy!'`的字符串实例存在了（因为根据上面的规则，`'crazy!'`实例不会进行内存驻留供后面的语句引用）。这是一种专门在交互环境下编译器的一种优化方法。
@@ -2347,9 +2342,7 @@ nan
 
 # :mortar_board: 版权声明
 
-<a href="http://www.wtfpl.net/"><img
-       src="http://www.wtfpl.net/wp-content/uploads/2012/12/wtfpl-badge-4.png"
-       width="80" height="15" alt="WTFPL" /></a>
+[![WTFPL](https://img.shields.io/badge/License-WTFPL%202.0-lightgrey.svg?style=flat-square)](http://www.wtfpl.net/)
 
 :copyright: [True1023](https://github.com/true1023/)
 
@@ -2361,4 +2354,6 @@ nan
 
 ## 关于pdf出版的问题
 
-我会在修正一些bug后找时间生成pdf版本的Crazy Python，想要的小伙伴可以[发信](mailto:shi12li12@gmail.com)给我，有消息后我会通知大家。
+我会在收集并修正一些bug后生成pdf版本的Crazy Python，想要的小伙伴可以[发信](mailto:shi12li12@gmail.com)给我，或者关注公众号**编程行动派**，我也会第一时间在公众号里通知大家。
+
+<p align="center"><img src="./assets/crazycoding_qr.jpg" alt=""></p>
