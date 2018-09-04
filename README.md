@@ -700,7 +700,7 @@ wtfpython
 ```
 
 #### 💡 解释:
-+ Python支持隐试的[字符串连接](https://docs.python.org/2/reference/lexical_analysis.html#string-literal-concatenation),比如下面这样，
++ Python支持隐式的[字符串连接](https://docs.python.org/2/reference/lexical_analysis.html#string-literal-concatenation),比如下面这样，
   ```
   >>> print("crazy" "python")
   crazypython
