@@ -347,11 +347,11 @@ for i, some_dict[i] in enumerate(some_string):
 
 * 再来看上面的例子，`enumerate(some_string)`这个函数会在每次迭代的时候产生两个值，分别是`i`(一个从0开始的索引值)和一个字符（来自`some_string`的值）。然后这两个值会分别赋值给`i`和`some_dict[i]`。把刚才的循环展开来看就像是下面这样：
   ```py
-  >>> i, some_dict[i] = (0, 'c')
-  >>> i, some_dict[i] = (1, 'r')
-  >>> i, some_dict[i] = (2, 'a')
-  >>> i, some_dict[i] = (3, 'z')
-  >>> i, some_dict[i] = (4, 'y')
+  >>> i, some_dict[i] = 'c'
+  >>> i, some_dict[i] = 'r'
+  >>> i, some_dict[i] = 'a'
+  >>> i, some_dict[i] = 'z'
+  >>> i, some_dict[i] = 'y'
   >>> some_dict
   ```
 
